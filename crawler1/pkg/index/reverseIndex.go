@@ -1,5 +1,10 @@
 package index
 
+import (
+	"gosearch/crawler1/pkg/crawler"
+	"strings"
+)
+
 type ReverseIndex struct {
 	storage map[string][]int
 }
@@ -10,10 +15,25 @@ func NewReverseIndex() *ReverseIndex {
 	}
 }
 
-//func (r *ReverseIndex) CreateIndex(docs *[]crawler.Document) map[string][]int {
-//	index := map[string][]int{}
-//	var tokens []string
-//	for {
-//
-//	}
-//}
+func (r *ReverseIndex) CreateIndex(docs *[]crawler.Document) map[string][]int {
+	indexes := map[string][]int{}
+	for _, doc := range *docs {
+		tokens := strings.Split(doc.Title, " ")
+		for _, token := range tokens {
+			if token == "." || token == "-" || token == "&" {
+				continue
+			}
+
+			_, ok := indexes[token]
+
+			if !ok {
+				indexes[token] = []int{doc.ID}
+				continue
+			}
+
+			indexes[token] = append(indexes[token], doc.ID)
+		}
+	}
+
+	return indexes
+}

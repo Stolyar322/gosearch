@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"gosearch/crawler1/pkg/crawler"
 	"gosearch/crawler1/pkg/crawler/spider"
-	"strings"
+	"gosearch/crawler1/pkg/index"
+	"math/rand"
+	"sort"
+	"time"
 )
 
 const depth int = 2
@@ -37,25 +40,31 @@ func main() {
 		scanResult = append(scanResult, document...)
 	}
 
-	links := searchUrl(&needle, &scanResult)
-	if len(links) == 0 {
-		fmt.Println("Scan result is empty")
+	source := rand.NewSource(time.Now().UnixNano())
+	randomizer := rand.New(source)
+	for i := range scanResult {
+		scanResult[i].ID = randomizer.Int()
+	}
+
+	sort.Slice(scanResult, func(i, j int) bool {
+		return scanResult[i].ID < scanResult[j].ID
+	})
+
+	indexBuilder := index.NewReverseIndex()
+	indexes := indexBuilder.CreateIndex(&scanResult)
+
+	linkIds, ok := indexes[needle]
+	if !ok {
+		fmt.Printf("Link with work %s not found", needle)
 		return
 	}
 
-	for _, link := range links {
-		fmt.Println(link)
-	}
-}
-
-func searchUrl(needle *string, scanResult *[]crawler.Document) []string {
-	var links []string
-
-	for _, doc := range *scanResult {
-		if strings.Contains(doc.URL, *needle) {
-			links = append(links, doc.URL)
+	for _, id := range linkIds {
+		link := sort.Search(len(scanResult), func(i int) bool {
+			return scanResult[i].ID >= id
+		})
+		if link < len(scanResult) && scanResult[link].ID == id {
+			fmt.Println(scanResult[link].URL)
 		}
 	}
-
-	return links
 }
