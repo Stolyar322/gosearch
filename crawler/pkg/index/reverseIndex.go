@@ -1,7 +1,7 @@
 package index
 
 import (
-	"gosearch/crawler1/pkg/crawler"
+	"gosearch/crawler/pkg/crawler"
 	"strings"
 )
 

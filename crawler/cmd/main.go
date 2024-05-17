@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"gosearch/crawler1/pkg/crawler"
-	"gosearch/crawler1/pkg/crawler/spider"
-	"gosearch/crawler1/pkg/index"
+	"gosearch/crawler/pkg/crawler"
+	"gosearch/crawler/pkg/crawler/spider"
+	"gosearch/crawler/pkg/index"
 	"math/rand"
 	"sort"
 	"time"
